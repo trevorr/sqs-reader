@@ -1,0 +1,10 @@
+.DS_Store
+.env
+*-debug.log
+*-error.log
+*.tgz
+/.nyc_output
+/coverage
+/dist
+/node_modules
+/test-results
