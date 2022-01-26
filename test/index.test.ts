@@ -1,5 +1,6 @@
 import { fail } from 'assert';
 import SQS from 'aws-sdk/clients/sqs';
+import { AWSError } from 'aws-sdk/lib/error';
 import { expect } from 'chai';
 import crypto from 'crypto';
 import { SQSReader } from '../src';
@@ -98,7 +99,7 @@ describe('SQSReader', function () {
       await queueReader.join();
       fail('exception expected');
     } catch (e) {
-      expect(e.code).to.equal('UnknownEndpoint');
+      expect((e as AWSError).code).to.equal('UnknownEndpoint');
     }
   });
 });

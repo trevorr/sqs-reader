@@ -100,7 +100,7 @@ export class SQSReader {
                 .promise();
             } catch (e) {
               /* istanbul ignore next */
-              logger.warn(`Failed to delete handles (${handles.join(', ')}): ${e.message}`);
+              logger.warn(`Failed to delete handles (${handles.join(', ')}): ${getErrorMessage(e)}`);
             }
           }
           idleDelaySeconds = this.options.initialIdleDelaySeconds;
@@ -113,14 +113,31 @@ export class SQSReader {
         this.running = false;
         if (e instanceof SleepCancelled) {
           logger.debug('Receive sleep cancelled');
-        } else if (e.code === 'RequestAbortedError') {
+        } else if (isAWSError(e) && e.code === 'RequestAbortedError') {
           logger.debug('Receive request aborted');
         } else {
-          logger.info(`Exception in receive loop: ${e.message}`);
+          logger.info(`Exception in receive loop: ${getErrorMessage(e)}`);
           throw e;
         }
       }
     }
     logger.debug('Receive loop exiting');
   }
+}
+
+function getErrorMessage(e: unknown): string {
+  /* istanbul ignore else */ 
+  if (e instanceof Error) {
+    return e.message;
+  }
+  /* istanbul ignore next */
+  if (e && typeof e === 'object') {
+    return e.constructor.name;
+  }
+  /* istanbul ignore next */
+  return String(e);
+}
+
+function isAWSError(e: unknown): e is AWSError {
+  return e instanceof Error && 'code' in e;
 }

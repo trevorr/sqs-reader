@@ -5,7 +5,7 @@
     "module": "commonjs",
     "sourceMap": true,
     "strict": true,
-    "target": "ES2018",
+    "target": "ES2019",
     "types": ["mocha", "node"]
   }
 }
