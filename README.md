@@ -9,6 +9,7 @@ A small, simple, robust asynchronous queue reader for [Amazon Simple Queue Servi
 ## Features
 
 * Configurable exponential delay between empty receive attempts to limit polling costs when idle
+* Can force polling to resume during idle delay
 * Supports immediate abort of receive/delay for graceful shutdown
 * Abstract logging mechanism uses console by default but can easily use frameworks like [Winston](https://github.com/winstonjs/winston)
 

@@ -48,6 +48,12 @@ export class SQSReader {
     }
   }
 
+  public resume(): void {
+    if (this.sleepHandle) {
+      this.sleepHandle.cancel();
+    }
+  }
+
   public stop(): void {
     this.running = false;
     if (this.receiveRequest) {
@@ -110,12 +116,13 @@ export class SQSReader {
           idleDelaySeconds = Math.min(idleDelaySeconds * 2, this.options.maximumIdleDelaySeconds);
         }
       } catch (e) {
-        this.running = false;
         if (e instanceof SleepCancelled) {
           logger.debug('Receive sleep cancelled');
         } else if (isAWSError(e) && e.code === 'RequestAbortedError') {
+          this.running = false;
           logger.debug('Receive request aborted');
         } else {
+          this.running = false;
           logger.info(`Exception in receive loop: ${getErrorMessage(e)}`);
           throw e;
         }
@@ -126,7 +133,7 @@ export class SQSReader {
 }
 
 function getErrorMessage(e: unknown): string {
-  /* istanbul ignore else */ 
+  /* istanbul ignore else */
   if (e instanceof Error) {
     return e.message;
   }
