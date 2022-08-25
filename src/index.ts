@@ -1,6 +1,7 @@
 import SQS from 'aws-sdk/clients/sqs';
 import { AWSError } from 'aws-sdk/lib/error';
 import { Request as AWSRequest } from 'aws-sdk/lib/request';
+import { ServiceConfigurationOptions } from 'aws-sdk/lib/service';
 import sleep, { SleepCancelled, SleepResult } from 'sleep-cancel';
 
 export interface Logger {
@@ -12,6 +13,7 @@ export interface Logger {
 }
 
 export interface SQSReaderOptions {
+  sqsConfiguration?: ServiceConfigurationOptions;
   waitTimeSeconds?: number;
   initialIdleDelaySeconds: number;
   maximumIdleDelaySeconds: number;
@@ -27,7 +29,7 @@ const defaultOptions: SQSReaderOptions = {
 export type SQSMessageCallback = (message: SQS.Message) => Promise<void>;
 
 export class SQSReader {
-  private readonly sqs = new SQS({ apiVersion: '2012-11-05' });
+  private readonly sqs;
   private readonly options: SQSReaderOptions;
   private running = false;
   private receiveRequest?: AWSRequest<SQS.Types.ReceiveMessageResult, AWSError>;
@@ -40,6 +42,7 @@ export class SQSReader {
     options?: Partial<SQSReaderOptions>
   ) {
     this.options = Object.assign({}, defaultOptions, options);
+    this.sqs = new SQS({ apiVersion: '2012-11-05', ...this.options.sqsConfiguration });
   }
 
   public start(): void {
