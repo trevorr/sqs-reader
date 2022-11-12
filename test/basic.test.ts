@@ -1,13 +1,13 @@
 import sleep from 'sleep-cancel';
 import { SQSReader } from '../src';
 
-const { AWS_SQS_INDEX_QUEUE_URL } = process.env;
+const { AWS_SQS_QUEUE_URL } = process.env;
 
-if (!AWS_SQS_INDEX_QUEUE_URL) {
-  throw new Error('AWS_SQS_INDEX_QUEUE_URL is not configured');
+if (!AWS_SQS_QUEUE_URL) {
+  throw new Error('AWS_SQS_QUEUE_URL is not configured');
 }
 
-const queueReader = new SQSReader(AWS_SQS_INDEX_QUEUE_URL, async (message) => {
+const queueReader = new SQSReader(AWS_SQS_QUEUE_URL, async (message) => {
   console.log('Received message', message.MessageId);
 });
 

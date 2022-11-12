@@ -5,10 +5,10 @@ import { expect } from 'chai';
 import crypto from 'crypto';
 import { SQSReader } from '../src';
 
-const { AWS_SQS_INDEX_QUEUE_URL } = process.env;
+const { AWS_SQS_QUEUE_URL } = process.env;
 
-if (!AWS_SQS_INDEX_QUEUE_URL) {
-  throw new Error('AWS_SQS_INDEX_QUEUE_URL is not configured');
+if (!AWS_SQS_QUEUE_URL) {
+  throw new Error('AWS_SQS_QUEUE_URL is not configured');
 }
 
 const sqs = new SQS({ apiVersion: '2012-11-05' });
@@ -32,7 +32,7 @@ describe('SQSReader', function () {
     const barrier = makeBarrier();
     let receivedId;
     let receivedBody;
-    const queueReader = new SQSReader(AWS_SQS_INDEX_QUEUE_URL, async (message) => {
+    const queueReader = new SQSReader(AWS_SQS_QUEUE_URL, async (message) => {
       receivedId = message.MessageId;
       receivedBody = message.Body;
       if (receivedBody === sentBody) {
@@ -46,7 +46,7 @@ describe('SQSReader', function () {
 
     const sendResult = await sqs
       .sendMessage({
-        QueueUrl: AWS_SQS_INDEX_QUEUE_URL,
+        QueueUrl: AWS_SQS_QUEUE_URL,
         MessageBody: sentBody,
       })
       .promise();
@@ -73,7 +73,7 @@ describe('SQSReader', function () {
     });
 
     const queueReader = new SQSReader(
-      AWS_SQS_INDEX_QUEUE_URL,
+      AWS_SQS_QUEUE_URL,
       async (message) => {
         // ignore unexpected messages in case there is pending junk in the queue
         console.log(`Received unexpected message ${message.MessageId}: ${message.Body}`);
@@ -107,7 +107,7 @@ describe('SQSReader', function () {
     let receivedId;
     let receivedBody;
     const queueReader = new SQSReader(
-      AWS_SQS_INDEX_QUEUE_URL,
+      AWS_SQS_QUEUE_URL,
       async (message) => {
         receivedId = message.MessageId;
         receivedBody = message.Body;
@@ -129,7 +129,7 @@ describe('SQSReader', function () {
 
     const sendResult = await sqs
       .sendMessage({
-        QueueUrl: AWS_SQS_INDEX_QUEUE_URL,
+        QueueUrl: AWS_SQS_QUEUE_URL,
         MessageBody: sentBody,
       })
       .promise();
